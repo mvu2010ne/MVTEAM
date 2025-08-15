@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trang chủ</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    header {
+      position: relative;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .menu-btn {
+      font-size: 28px;
+      cursor: pointer;
+      color: #0ff;
+      user-select: none;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 260px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      border-right: 2px solid #0ff;
+      transition: 0.3s;
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 999;
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      color: #0ff;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .service {
+      margin-bottom: 15px;
+      background: #111;
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .service-title {
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .functions {
+      margin-top: 8px;
+      display: none;
+    }
+
+    .functions a {
+      display: block;
+      margin: 5px 0;
+      color: #0ff;
+      text-decoration: none;
+      font-size: 14px;
+      padding-left: 10px;
+    }
+
+    .service.open .functions {
+      display: block;
+    }
+
+    .main {
+      padding: 10px 20px;
+      margin-top: 10px;
+    }
+
+    .intro {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #0ff;
+      padding: 15px;
+      border-radius: 10px;
+      max-width: 90%;
+      margin: 20px auto;
+    }
+
+    .intro h3 {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .intro-content {
+      margin-top: 10px;
+    }
+
+    .intro.closed .intro-content {
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      margin: 30px 0 20px;
+      color: #0ff;
+      font-weight: bold;
+    }
+
+    .alert {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #f00;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+      animation: shake 0.3s infinite;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(5px, 5px); }
+      50% { transform: translate(-5px, -5px); }
+      75% { transform: translate(5px, -5px); }
+      100% { transform: translate(-5px, 5px); }
+    }
+
+    @media screen and (max-width: 600px) {
+      .menu-btn {
+        font-size: 24px;
+      }
+      .alert {
+        font-size: 1.4rem;
+        padding: 0 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<audio id="alertSound" src="https://cdn.pixabay.com/audio/2022/08/22/audio_4b81a9b2ff.mp3"></audio>
+<div class="alert" id="alertBox" style="display:none;">
+  CẢNH BÁO<br>TRUY CẬP TRÁI PHÉP!
+</div>
+
+<header>
+  <div class="menu-btn" onclick="handleMenuClick()">☰</div>
+</header>
+
+<div class="sidebar" id="sidebar">
+  <h2>DỊCH VỤ</h2>
+  <div class="service" onclick="toggleService(this)">
+    <div class="service-title"> TikTok <span>▼</span></div>
+    <div class="functions">
+      <a href="/tiktok/fltt.php">• Tăng follow</a>
+      <a href="/tiktok/dltt.php">• Tải video không logo</a>
+    </div>
+  </div>
+  <div class="service" onclick="toggleService(this)">
+    <div class="service-title"> Facebook <span>▼</span></div>
+    <div class="functions">
+
+      <a href="/facebook/download.php">• Tải video reef</a>
+      <a href="/facebook/regfb.php">• Reg tài khoản</a>
+      <a href="/facebook/check.php">• Kiểm tra thông tin facebook</a>
+      <a href="/facebook/share.php">• Share bài viết</a>
+    </div>
+  </div>
+  <div class="service" onclick="toggleService(this)">
+    <div class="service-title"> Tiện Ích<span>▼</span></div>
+    <div class="functions">
+      <a href="/qr/">• Tạo qr</a>
+      <a href="/code/">• Tải Code Miễn Phí</a>
+      <a href="/ngl/">• Spam Ngl</a>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="intro closed" id="introBox">
+    <h3 onclick="toggleIntro()">Giới thiệu / Hướng dẫn <span id="introArrow">▼</span></h3>
+    <div class="intro-content">
+      <p>Chào mừng bạn đến với hệ thống auto dịch vụ của Minh Vũ.</p>
+    </div>
+  </div>
+</div>
+
+<footer>© Minh Vũ</footer>
+
+<script>
+  let firstClick = true;
+
+  function handleMenuClick() {
+    if (firstClick) {
+      showAlert();
+      firstClick = false;
+    } else {
+      toggleSidebar();
+    }
+  }
+
+  function showAlert() {
+    const alertBox = document.getElementById("alertBox");
+    alertBox.style.display = "flex";
+    document.getElementById("alertSound").play();
+    setTimeout(() => {
+      alertBox.style.display = "none";
+      toggleSidebar();
+    }, 5000);
+  }
+
+  function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+  }
+
+  document.addEventListener("click", function(e) {
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar.classList.contains("open") && !sidebar.contains(e.target) && !e.target.closest('.menu-btn')) {
+      sidebar.classList.remove("open");
+    }
+  });
+
+  function toggleService(el) {
+    document.querySelectorAll('.sidebar .service').forEach(item => {
+      if (item !== el) item.classList.remove('open');
+    });
+    el.classList.toggle('open');
+  }
+
+  function toggleIntro() {
+    const box = document.getElementById("introBox");
+    const arrow = document.getElementById("introArrow");
+    box.classList.toggle("closed");
+    arrow.textContent = box.classList.contains("closed") ? "▼" : "▲";
+  }
+
+  // Matrix Background
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+  const chars = "01";
+  const font_size = 14;
+  const columns = canvas.width / font_size;
+  const drops = [];
+  for (let x = 0; x < columns; x++) drops[x] = 1;
+  function draw() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#0f0";
+    ctx.font = font_size + "px monospace";
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(text, i * font_size, drops[i] * font_size);
+      if (drops[i] * font_size > canvas.height && Math.random() > 0.975)
+        drops[i] = 0;
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 33);
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+</body>
+</html>
